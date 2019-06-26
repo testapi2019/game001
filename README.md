@@ -1,2 +1,1 @@
-# game001
-test
+bopen=true
