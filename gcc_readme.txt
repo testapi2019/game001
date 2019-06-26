@@ -1,0 +1,1 @@
+java -jar gcc.jar --js xxxx.js --js_output_file yyyy.js
