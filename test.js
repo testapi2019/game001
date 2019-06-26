@@ -1,6 +1,6 @@
 function testGitApi(str)
 {
-    alert("test.js.testGitApi:"+str);
+    console.log("test.js.testGitApi:"+str);
 }
 
 testGitApi("xxxxx");
