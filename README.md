@@ -1,2 +1,2 @@
-test bopen=1;
+test bopen=0;
 find b;
